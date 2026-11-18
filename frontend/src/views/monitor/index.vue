@@ -25,11 +25,13 @@
       <tbody><tr v-for="row in results" :key="row.id"><td v-for="c in resultColumns" :key="c">{{ row[c] ?? '—' }}</td></tr></tbody>
     </table>
     <p v-if="!results.length && !loading" style="text-align:center;color:var(--muted)">请配置参数后运行分析</p>
+    <QuotaObservationPanel />
   </section>
 </template>
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { request } from '@/api/client'
+import QuotaObservationPanel from './QuotaObservationPanel.vue'
 const ENDPOINT = '/api/monitor'
 const summaryMetrics = ref<{label:string;value:number;trend:number}[]>([])
 const results = ref<any[]>([]); const chartData = ref<{label:string;value:number}[]>([])

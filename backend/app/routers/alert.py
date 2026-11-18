@@ -41,6 +41,17 @@ def list_entries(
     return PageResult(items=items, total=total, page=page, size=size)
 
 
+@router.get("/quota-todos")
+def list_quota_alert_todos(
+    调用方: str | None = Query(default=None),
+    周期版本: str | None = Query(default=None),
+) -> dict:
+    """运行监控回写的 API 配额超限告警待办，数据源为 API 配额消耗数据台账。"""
+    from app.services.quota import quota_service
+    items = quota_service.list_alert_todos(caller=调用方, period=周期版本)
+    return {"ok": True, "total": len(items), "items": items}
+
+
 @router.get("/export")
 def export_entries(
     request: Request,

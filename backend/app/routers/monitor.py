@@ -61,6 +61,39 @@ def export_entries() -> StreamingResponse:
                              headers={"Content-Disposition": "attachment; filename=monitor.csv"})
 
 
+@router.get("/quota/observations")
+def quota_observations(周期版本: str | None = Query(default=None)) -> dict[str, Any]:
+    """接口运行观测清单：从 API 配额消耗数据台账聚合，不读内存临时计数。"""
+    from app.services.quota import quota_service
+    period = 周期版本 or quota_service.ensure_period()
+    return {"ok": True, "current": period, "items": service.quota_observations(period)}
+
+
+@router.post("/quota/scan-alerts")
+def scan_quota_alerts(payload: dict[str, object] | None = None) -> dict[str, Any]:
+    """扫描超限调用方并回写告警待办；连续运行同一份结论只生成一条待办。"""
+    period = None
+    if payload:
+        period = str(payload.get("周期版本") or "").strip() or None
+    result = service.scan_quota_alerts(period)
+    result["ok"] = True
+    result["message"] = (
+        f"扫描完成：新增 {result['新增数量']} 条配额超限告警，"
+        f"拦截 {result['重复数量']} 条重复结论"
+    )
+    return result
+
+
+@router.get("/quota/alert-todos")
+def quota_alert_todos(
+    调用方: str | None = Query(default=None),
+    周期版本: str | None = Query(default=None),
+) -> dict[str, Any]:
+    """读取已回写的配额超限告警待办。"""
+    items = service.quota_alert_todos(caller=调用方, period=周期版本)
+    return {"ok": True, "total": len(items), "items": items}
+
+
 @router.get("/{entry_id}")
 def get_entry(entry_id: int) -> dict:
     entry = service.get_entry(entry_id)

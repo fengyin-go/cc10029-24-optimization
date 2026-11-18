@@ -76,6 +76,8 @@
       <span>共 {{ total }} 条告警中心记录</span>
       <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
     </footer>
+
+    <QuotaTodoPanel />
   </section>
 </template>
 
@@ -83,6 +85,7 @@
 import { computed, onMounted, ref } from 'vue'
 
 import { request } from '@/api/client'
+import QuotaTodoPanel from './QuotaTodoPanel.vue'
 
 type Row = Record<string, string | number | null>
 

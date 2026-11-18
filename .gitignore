@@ -87,6 +87,9 @@ desktop.ini
 *.db
 *.pid
 *.seed
+# API 配额消耗数据台账等本地持久化数据，不入库
+backend/data/
+data/
 
 # BEGIN S11 LOCAL SNAPSHOT EXCLUSIONS
 **/.git/**
